@@ -40,6 +40,12 @@ Likewise, for MySQL tests, create a database called `lapis_test`. Ensure the
 busted spec_mysql
 ```
 
+For Cassandra tests, create a keyspace called `lapis_test` with a node running on `localhost`.
+
+```bash
+busted spec_cassandra
+```
+
 ## License (MIT)
 
 Copyright (C) 2016 by Leaf Corcoran
