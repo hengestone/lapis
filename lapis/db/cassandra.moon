@@ -169,12 +169,6 @@ _delete = (table, cond, ...) ->
 _truncate = (table) ->
   raw_query "TRUNCATE " .. escape_identifier table
 
--- To be implemented
--- {
---   :parse_clause
---
--- }
-
 {
   :connect
   :raw, :is_raw, :NULL, :TRUE, :FALSE
