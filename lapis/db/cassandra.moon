@@ -1,6 +1,8 @@
 
 import type, tostring, pairs, select from _G
 import concat from table
+utf8 = require 'lua-utf8'
+escape = utf8.escape
 
 import
   FALSE
@@ -16,6 +18,7 @@ import
   from require "lapis.db.base"
 
 local conn, logger
+local escape
 local *
 
 BACKENDS = {
@@ -61,7 +64,7 @@ escape_literal = (val) ->
       return tostring val
     when "string"
       if conn
-        return "'#{conn\escape val}'"
+        return "\"#{utf8.escape(val)}\""
       else if ngx
         return ngx.quote_sql_str(val)
       else
@@ -85,20 +88,21 @@ escape_literal = (val) ->
 escape_identifier = (ident) ->
   return ident[1] if is_raw ident
   ident = tostring ident
-  '`' ..  (ident\gsub '`', '``') .. '`'
+  '"' ..  (ident\gsub '"', '\"') .. '"'
 
 init_logger = ->
-  config = require("lapis.config").get!
-  logger = if ngx or os.getenv("LAPIS_SHOW_QUERIES") or config.show_queries
+  logger = if ngx or os.getenv("LAPIS_SHOW_QUERIES") or config().show_queries
     require "lapis.logging"
 
 init_db = ->
-  config = require("lapis.config").get!
-  backend = config.cassandra and config.cassandra.backend
+  backend = config().cassandra and config().cassandra.backend
   unless backend
     backend = "cassandra" -- TODO openresty cluster backend
 
   set_backend backend
+
+config = ->
+  require("lapis.config").get!
 
 connect = ->
   init_logger!
@@ -186,6 +190,7 @@ _truncate = (table) ->
 
   :format_date
   :init_logger
+  :config
 
   :set_backend
   :set_raw_query

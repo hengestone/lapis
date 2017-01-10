@@ -24,9 +24,9 @@ entity_exists = (name) ->
   cassandra_config = assert config.cassandra, "missing cassandra configuration"
   database = escape_literal assert cassandra_config.keyspace
   name = escape_literal name
-  columns, error, code = @db.query "
-      SELECT * FROM system.schema_columns where
-      keyspace_name = '#{database}' AND  columnfamily_name = '#{name}'
+  columns, error, code = db.query "
+      SELECT * FROM \"system.schema_columns\" where
+      keyspace_name = #{database} AND  columnfamily_name = #{name}
     "
   not error and #columns > 0
 
@@ -49,6 +49,7 @@ create_table = (name, columns, opts={}) ->
 
     add "," unless i == #columns
 
+  add ");"
   add "\n" if #columns > 0
 
   db.query concat buffer

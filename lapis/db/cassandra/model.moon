@@ -8,7 +8,7 @@ class Model extends BaseModel
   @columns: =>
     columns, error, code = @db.query "
       SELECT * FROM system.schema_columns where
-      keyspace_name = '#{@db.escape_identifier}' AND  columnfamily_name = '#{@table_name!}'
+      keyspace_name = '#{@db.config().cassandra.keyspace}' AND  columnfamily_name = '#{@table_name!}'
     "
     columns = [c for c in *columns] -- strip extra data from query
     @columns = -> columns
