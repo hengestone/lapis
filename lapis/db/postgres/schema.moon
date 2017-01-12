@@ -64,7 +64,7 @@ create_index = (tname, ...) ->
 
   if options.method
     append_all buffer, " USING ", options.method
-    
+
   append_all buffer, " ("
 
   for i, col in ipairs columns
@@ -75,7 +75,7 @@ create_index = (tname, ...) ->
 
   if options.tablespace
     append_all buffer, " TABLESPACE ", options.tablespace
-    
+
   if options.where
     append_all buffer, " WHERE ", options.where
 

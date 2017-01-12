@@ -4,6 +4,19 @@ import concat from table
 utf8 = require 'lua-utf8'
 escape = utf8.escape
 
+-- Print contents of `tbl`, with indentation.
+-- `indent` sets the initial level of indentation.
+tprint = (tbl, indent) ->
+  if not indent
+    indent = 0
+  for k, v in pairs(tbl) do
+    formatting = string.rep("  ", indent) .. k .. ": "
+    if type(v) == "table" then
+      print(formatting)
+      tprint(v, indent+1)
+    else
+      print(formatting .. v)
+
 import
   FALSE
   NULL
@@ -45,6 +58,9 @@ BACKENDS = {
       cur
 }
 
+config = ->
+  require("lapis.config").get!
+
 set_backend = (name, ...) ->
   backend = BACKENDS[name]
   unless backend
@@ -64,7 +80,7 @@ escape_literal = (val) ->
       return tostring val
     when "string"
       if conn
-        return "\"#{utf8.escape(val)}\""
+        return "'#{utf8.escape(val)}'"
       else if ngx
         return ngx.quote_sql_str(val)
       else
@@ -91,18 +107,16 @@ escape_identifier = (ident) ->
   '"' ..  (ident\gsub '"', '\"') .. '"'
 
 init_logger = ->
-  logger = if ngx or os.getenv("LAPIS_SHOW_QUERIES") or config().show_queries
+  tprint(config)
+  logger = if ngx or os.getenv("LAPIS_SHOW_QUERIES") or config.show_queries
     require "lapis.logging"
 
 init_db = ->
-  backend = config().cassandra and config().cassandra.backend
+  backend = config.cassandra and config.cassandra.backend
   unless backend
     backend = "cassandra" -- TODO openresty cluster backend
 
   set_backend backend
-
-config = ->
-  require("lapis.config").get!
 
 connect = ->
   init_logger!

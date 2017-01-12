@@ -4,7 +4,7 @@ schema = require "lapis.db.cassandra.schema"
 
 import setup_db, teardown_db from require "spec_cassandra.helpers"
 import drop_tables from require "lapis.spec.db"
-import create_table, drop_table, types from schema
+import create_table, drop_table, types, ColumnType from schema
 
 describe "model", ->
   setup ->
@@ -28,26 +28,27 @@ describe "model", ->
   it "should create a table", ->
     drop_table 'hello_worlds'
     create_table 'hello_worlds', {
-      {"id", types.id}
+      {"id", types.int(primary_key: true)}
       {"name", types.varchar}
     }
 
-    assert.same 1, #db.query [[
+    assert.same 2, #db.query [[
       select * from system.schema_columns
       where keyspace_name = 'lapis_test' and columnfamily_name = 'hello_worlds'
     ]]
 
     db.insert "hello_worlds", {
+      id: 1
       name: 'well well well'
     }
 
     res = db.insert 'hello_worlds', {
+      id: 2
       name: "another one"
     }
 
     assert.same {
-      affected_rows: 1
-      last_auto_id: 2
+      type: 'VOID'
     }, res
 
   describe "with table", ->
@@ -64,6 +65,6 @@ describe "model", ->
 
 
     it "should add column", ->
-      schema.add_column "hello_worlds", "counter", schema.types.integer 123
+      schema.add_column "hello_worlds", "counter", schema.types.int 123
 
 

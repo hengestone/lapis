@@ -11,25 +11,26 @@ describe "model", ->
     teardown_db!
 
   describe "core model", ->
-    build = require "spec.core_model_specs"
+    build = require "spec.core_model_cassandra_specs"
     build { :Users, :Posts, :Likes }
 
   it "should get columns of model", ->
     Users\create_table!
     assert.same {
       {
-        "Extra": "auto_increment"
-        "Field": "id"
-        "Key": "PRI"
-        "Null": "NO"
-        "Type": "int(11)"
+        "column_name": "id"
+        "columnfamily_name": "users"
+        "keyspace_name": "lapis_test"
+        "type": "partition_key"
+        "validator": "org.apache.cassandra.db.marshal.UUIDType"
       }
       {
-        "Extra": ""
-        "Field": "name"
-        "Key": ""
-        "Null": "NO"
-        "Type": "text"
+        "column_name": "name"
+        "columnfamily_name": "users"
+        "component_index": 0
+        "keyspace_name": "lapis_test"
+        "type": "regular"
+        "validator": "org.apache.cassandra.db.marshal.UTF8Type"
       }
     }, Users\columns!
 

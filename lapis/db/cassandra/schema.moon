@@ -1,6 +1,6 @@
 db = require "lapis.db.cassandra"
 
-import escape_literal, escape_identifier from db
+import escape_literal, escape_identifier, config from db
 import concat from table
 import gen_index_name from require "lapis.db.base"
 
@@ -20,13 +20,11 @@ extract_options = (cols) ->
   cols, options
 
 entity_exists = (name) ->
-  config = require("lapis.config").get!
-  cassandra_config = assert config.cassandra, "missing cassandra configuration"
-  database = escape_literal assert cassandra_config.keyspace
   name = escape_literal name
+  cassandra_config = config().cassandra
   columns, error, code = db.query "
       SELECT * FROM \"system.schema_columns\" where
-      keyspace_name = #{database} AND  columnfamily_name = #{name}
+      keyspace_name = #{cassandra_config.keyspace} AND  columnfamily_name = #{name}
     "
   not error and #columns > 0
 
@@ -36,7 +34,7 @@ create_table = (name, columns, opts={}) ->
   else
     "CREATE TABLE "
 
-  buffer = {prefix, escape_identifier(name), " ("}
+  buffer = {prefix, escape_literal(name), " ("}
   add = (...) -> append_all buffer, ...
 
   for i, c in ipairs columns
@@ -55,8 +53,9 @@ create_table = (name, columns, opts={}) ->
   db.query concat buffer
 
 drop_table = (tname) ->
+  cassandra_config = config().cassandra
   escape_literal assert cassandra_config.keyspace
-  @db.query "DROP TABLE #{escape_literal cassandra_config.keyspace}.#{escape_identifier tname};"
+  db.query "DROP TABLE #{escape_literal cassandra_config.keyspace}.#{escape_literal tname};"
 
 create_index = (tname, ...) ->
   index_name = gen_index_name tname, ...
@@ -143,7 +142,7 @@ types = setmetatable {
   char:         C "ascii"
   text:         C "varchar"
   blob:         C "blob"
-  integer:      C "int"
+  int:          C "int"
   bigint:       C "bigint"
   float:        C "float"
   double:       C "double"
@@ -166,5 +165,6 @@ types = setmetatable {
   :drop_column
   :rename_column
   :rename_table
+  :ColumnType
 }
 
