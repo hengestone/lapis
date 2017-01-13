@@ -28,7 +28,7 @@ describe "model", ->
   it "should create a table", ->
     drop_table 'hello_worlds'
     create_table 'hello_worlds', {
-      {"id", types.int(primary_key: true)}
+      {"id", types.integer(primary_key: true)}
       {"name", types.varchar}
     }
 
@@ -65,6 +65,6 @@ describe "model", ->
 
 
     it "should add column", ->
-      schema.add_column "hello_worlds", "counter", schema.types.int 123
+      schema.add_column "hello_worlds", "counter", schema.types.integer 123
 
 

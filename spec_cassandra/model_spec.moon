@@ -15,14 +15,15 @@ describe "model", ->
     build { :Users, :Posts, :Likes }
 
   it "should get columns of model", ->
-    Users\create_table!
+    result, error, code = Users\create_table!
+
     assert.same {
       {
         "column_name": "id"
         "columnfamily_name": "users"
         "keyspace_name": "lapis_test"
         "type": "partition_key"
-        "validator": "org.apache.cassandra.db.marshal.UUIDType"
+        "validator": "org.apache.cassandra.db.marshal.Int32Type"
       }
       {
         "column_name": "name"

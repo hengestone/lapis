@@ -34,7 +34,7 @@ create_table = (name, columns, opts={}) ->
   else
     "CREATE TABLE "
 
-  buffer = {prefix, escape_literal(name), " ("}
+  buffer = {prefix, escape_identifier(name), " ("}
   add = (...) -> append_all buffer, ...
 
   for i, c in ipairs columns
@@ -142,7 +142,7 @@ types = setmetatable {
   char:         C "ascii"
   text:         C "varchar"
   blob:         C "blob"
-  int:          C "int"
+  integer:      C "int"
   bigint:       C "bigint"
   float:        C "float"
   double:       C "double"

@@ -4,19 +4,6 @@ import concat from table
 utf8 = require 'lua-utf8'
 escape = utf8.escape
 
--- Print contents of `tbl`, with indentation.
--- `indent` sets the initial level of indentation.
-tprint = (tbl, indent) ->
-  if not indent
-    indent = 0
-  for k, v in pairs(tbl) do
-    formatting = string.rep("  ", indent) .. k .. ": "
-    if type(v) == "table" then
-      print(formatting)
-      tprint(v, indent+1)
-    else
-      print(formatting .. v)
-
 import
   FALSE
   NULL
@@ -48,8 +35,6 @@ BACKENDS = {
     conn = assert(cassandra.new(cassandra_config))
     conn\settimeout(1000)
     assert(conn\connect())
-
-
     (q) ->
       logger.query(q) if logger
       cur, error, code = conn\execute(q)
@@ -107,7 +92,6 @@ escape_identifier = (ident) ->
   '"' ..  (ident\gsub '"', '\"') .. '"'
 
 init_logger = ->
-  tprint(config)
   logger = if ngx or os.getenv("LAPIS_SHOW_QUERIES") or config.show_queries
     require "lapis.logging"
 

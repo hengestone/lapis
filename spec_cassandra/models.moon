@@ -6,7 +6,7 @@ class Users extends Model
   @create_table: =>
     drop_tables @
     create_table @table_name!, {
-      {"id", types.id}
+      {"id", types.integer primary_key: true}
       {"name", types.varchar}
     }
 
