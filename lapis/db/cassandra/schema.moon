@@ -44,8 +44,17 @@ create_table = (name, columns, opts={}) ->
       add escape_identifier(name), " ", tostring kind
     else
       add c
+    add ",\n" unless i == #columns
 
-    add "," unless i == #columns
+  if opts.primary_key
+    add ", \nPRIMARY KEY ("
+    if type(opts.primary_keys) == "table"
+      for i, c in ipairs opts.primary_key
+        add(c)
+        add ", " unless i == #opts.primary_key
+    else
+      add opts.primary_key
+    add ")"
 
   add ");"
   add "\n" if #columns > 0

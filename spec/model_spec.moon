@@ -105,13 +105,13 @@ describe "lapis.db.model", ->
       assert_queries {
         [[SELECT * from "things" WHERE "dad" IN (1, 2, 4)]]
       }
-    
+
     it "with fields option", ->
       Things\find_all { 1,2,4 }, fields: "hello"
       assert_queries {
         [[SELECT hello from "things" WHERE "id" IN (1, 2, 4)]]
       }
-    
+
     it "with multiple field and key option", ->
       Things\find_all { 1,2,4 }, fields: "hello, world", key: "dad"
       assert_queries {
