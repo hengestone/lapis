@@ -2,7 +2,6 @@
 import type, tostring, pairs, select from _G
 import concat from table
 utf8 = require 'lua-utf8'
-escape = utf8.escape
 
 import
   FALSE
@@ -18,7 +17,6 @@ import
   from require "lapis.db.base"
 
 local conn, logger
-local escape
 local *
 
 BACKENDS = {

@@ -63,14 +63,15 @@ create_table = (name, columns, opts={}) ->
   -- Table options
   if opts.table_with
     add "\nWITH "
+    i = 0
     for n, c in pairs opts.primary_key
+      add "\nAND " unless i == 0
+      i += 1
       add " #{n} = "
       if type(c) == string
         add "'#{c}'"
       else
         add(c)
-
-      add "\nAND " unless i == #opts.table_with
 
   add ";\n"
 
@@ -188,8 +189,8 @@ types = setmetatable {
   :drop_index
   :add_column
   :drop_column
-  :rename_column
-  :rename_table
+  -- :rename_column
+  -- :rename_table
   :ColumnType
 }
 
