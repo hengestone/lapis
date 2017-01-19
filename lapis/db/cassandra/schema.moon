@@ -37,6 +37,7 @@ create_table = (name, columns, opts={}) ->
   buffer = {prefix, escape_identifier(name), " ("}
   add = (...) -> append_all buffer, ...
 
+  -- Columns
   for i, c in ipairs columns
     add "\n  "
     if type(c) == "table"
@@ -46,6 +47,7 @@ create_table = (name, columns, opts={}) ->
       add c
     add ",\n" unless i == #columns
 
+  -- Primary key(s)
   if opts.primary_key
     add ", \nPRIMARY KEY ("
     if type(opts.primary_keys) == "table"
@@ -56,8 +58,21 @@ create_table = (name, columns, opts={}) ->
       add opts.primary_key
     add ")"
 
-  add ");"
-  add "\n" if #columns > 0
+  add ")"
+
+  -- Table options
+  if opts.table_with
+    add "\nWITH "
+    for n, c in pairs opts.primary_key
+      add " #{n} = "
+      if type(c) == string
+        add "'#{c}'"
+      else
+        add(c)
+
+      add "\nAND " unless i == #opts.table_with
+
+  add ";\n"
 
   db.query concat buffer
 
@@ -151,6 +166,7 @@ types = setmetatable {
   char:         C "ascii"
   text:         C "varchar"
   blob:         C "blob"
+  int:          C "int"
   integer:      C "int"
   bigint:       C "bigint"
   float:        C "float"
